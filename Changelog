@@ -1,0 +1,11 @@
+jatsParser/JATSParser/src/JATSParser/Back/AbstractReference.php 
+jatsParser/JATSParser/src/JATSParser/Back/Book.php
+jatsParser/JATSParser/src/JATSParser/Back/Reference.php
+jatsParser/JATSParser/src/JATSParser/Body/Document.php
+jatsParser/JATSParser/src/JATSParser/HTML/Document.php
+jatsParser/JATSParser/src/JATSParser/HTML/Reference.php
+jatsParser/JATSParser/src/JATSParser/HTML/ReferenceMethods.php 
+jatsParser/JatsParserPlugin.inc.php
+jatsParser/resources/javascript/jatsParser.js
+jatsParser/resources/styles/jatsParser.css 
+jatsParser/templates/articleView.tpl 
