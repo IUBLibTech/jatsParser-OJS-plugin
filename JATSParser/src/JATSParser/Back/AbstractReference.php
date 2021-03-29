@@ -64,7 +64,7 @@ abstract class AbstractReference implements Reference {
 		$this->authors = $this->extractAuthors($reference);
 		$this->editors = $this->extractEditors($reference);
 		$this->id = $this->extractId($reference);
-		$this->year = $this->extractFromElement($reference, './/year[1]');
+		$this->year = $this->extractFromElement($reference, './/year[2]');
 		$this->url = $this->extractFromElement($reference, './/ext-link[@ext-link-type="uri"]');
 		$this->price = $this->extractFromElement($reference, './/page-range');
 		$this->pages = $this->extractFromElement($reference, './/price');
