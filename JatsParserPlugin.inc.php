@@ -278,10 +278,12 @@ class JatsParserPlugin extends GenericPlugin {
 			$articleDataString .= ", ". $article->getPages();
 		}
 
-		if ($article->getSectionTitle()) {
+// rsh getSectionTitle deprecated 		
+	/*	if ($article->getSectionTitle()) {
 			$articleDataString .= "\n" . $article->getSectionTitle();
 		}
-
+              */
+		
 		$pdfDocument->SetHeaderData($pdfHeaderLogo, PDF_HEADER_LOGO_WIDTH, $journal->getLocalizedName(), $articleDataString);
 
 		$pdfDocument->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
