@@ -26,38 +26,31 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="jatsParser__meta-row">
-
-			{* Section title *}
-			{if $article->getSectionTitle()}
-				<div class="jatsParser__meta-section-title">
-					{$article->getSectionTitle()|escape}
-				</div>
-			{/if}
-
-			{* DOI (requires plugin) *}
-			{foreach from=$pubIdPlugins item=pubIdPlugin}
-				{if $pubIdPlugin->getPubIdType() != 'doi'}
-					{continue}
-				{/if}
-				{assign var=pubId value=$article->getStoredPubId($pubIdPlugin->getPubIdType())}
-				{if $pubId}
-					{assign var="doiUrl" value=$pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}
-					<div class="jatsParser__meta-doi">
-						<span class="jatsParser__doi-label">
-							{capture assign=translatedDOI}{translate key="plugins.pubIds.doi.readerDisplayName"}{/capture}
-							{translate key="semicolon" label=$translatedDOI}
-						</span>
-						<span class="jatsParser__meta-doi-value">
-							<a href="{$doiUrl}">
-								{* maching DOI's (with new and old format) *}
-								{$doiUrl|regex_replace:"/http.*org\//":" "}
-							</a>
-						</span>
-					</div>
-				{/if}
-			{/foreach}
-		</div>
+<!-- rsh getSectionTitle deprecated in 3.2.1-2+ https://github.com/pkp/pkp-lib/issues/6102 -->
+       <!-- <div class="jatsParser__meta-row">
+            {* DOI (requires plugin) *}
+            {foreach from=$pubIdPlugins item=pubIdPlugin}
+                {if $pubIdPlugin->getPubIdType() != 'doi'}
+                    {continue}
+                {/if}
+                {assign var=pubId value=$article->getStoredPubId($pubIdPlugin->getPubIdType())}
+                {if $pubId}
+                    {assign var="doiUrl" value=$pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}
+                    <div class="jatsParser__meta-doi">
+                        <span class="jatsParser__doi-label">
+                            {capture assign=translatedDOI}{translate key="plugins.pubIds.doi.readerDisplayName"}{/capture}
+                            {translate key="semicolon" label=$translatedDOI}
+                        </span>
+                        <span class="jatsParser__meta-doi-value">
+                            <a href="{$doiUrl}">
+                                {* maching DOI's (with new and old format) *}
+                                {$doiUrl|regex_replace:"/http.*org\//":" "}
+                            </a>
+                        </span>
+                    </div>
+                {/if}
+            {/foreach}
+        </div> -->
 
 		{* Article title *}
 		{if $article->getLocalizedFullTitle()}
