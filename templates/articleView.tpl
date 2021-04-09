@@ -89,6 +89,7 @@
                     {/foreach}
                 </ul>
             {/if}
+	<hr class="jatsParser">	    
 		{$htmlDocument}
 
 			</div>
