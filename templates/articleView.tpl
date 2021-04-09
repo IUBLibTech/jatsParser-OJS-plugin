@@ -26,31 +26,6 @@
 				{/if}
 			</div>
 		{/if}
-<!-- rsh getSectionTitle deprecated in 3.2.1-2+ https://github.com/pkp/pkp-lib/issues/6102 -->
-       <!-- <div class="jatsParser__meta-row">
-            {* DOI (requires plugin) *}
-            {foreach from=$pubIdPlugins item=pubIdPlugin}
-                {if $pubIdPlugin->getPubIdType() != 'doi'}
-                    {continue}
-                {/if}
-                {assign var=pubId value=$article->getStoredPubId($pubIdPlugin->getPubIdType())}
-                {if $pubId}
-                    {assign var="doiUrl" value=$pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}
-                    <div class="jatsParser__meta-doi">
-                        <span class="jatsParser__doi-label">
-                            {capture assign=translatedDOI}{translate key="plugins.pubIds.doi.readerDisplayName"}{/capture}
-                            {translate key="semicolon" label=$translatedDOI}
-                        </span>
-                        <span class="jatsParser__meta-doi-value">
-                            <a href="{$doiUrl}">
-                                {* maching DOI's (with new and old format) *}
-                                {$doiUrl|regex_replace:"/http.*org\//":" "}
-                            </a>
-                        </span>
-                    </div>
-                {/if}
-            {/foreach}
-        </div> -->
 
 		{* Article title *}
 		{if $article->getLocalizedFullTitle()}
@@ -85,29 +60,35 @@
 			<div class="jatsParser__article-fulltext" id="jatsParserFullText">
  		
 	{* TMR div for hook to js for product citation *}	 
-    <div id="jatsParser__related-object" style="padding-left:0;">
-</div>
+    	<div id="jatsParser__related-object" style="padding-left:0;"> </div>
 		
-		 {* Authors' list *}
-                {if $article->getAuthors()}
-                <ul style="padding-left:0;">
-                                {foreach from=$article->getAuthors() item=authorString key=authorStringKey}
-                                        {strip}
-		{* Book under Review *}
-                     <b>Reviewed by:</b><br/>
-                 <span class="jatsParser__meta-author" style="font-weight:normal;">{$authorString->getFullName()|escape}</span>
-                        {/strip}{/foreach}
-                                {foreach from=$article->getAuthors() item=author key=authorKey}
-                {if $author->getLocalizedAffiliation()}
-                                <br/><span>{$author->getLocalizedAffiliation()|escape}</span>
-                                {/if}
-                                {if $author->getLocalizedBiography()}
-                                <br/><span>{$author->getLocalizedBiography()|escape}</span>
-                                {/if}
-                        {/foreach}
-                        </ul>
-
-                {/if}
+            {if $article->getAuthors()}
+                <ul class="jatsParser__byline" style="font-size:16px;">
+                    {foreach from=$article->getAuthors() item=authorString key=authorStringKey}
+                        {strip}
+                    <li class="jatsParser__meta-byline">Reviewed by: </li>
+                     <li class="jatsParser__meta-author">{$authorString->getFullName()|escape}</li>
+                        {/strip}
+                    {/foreach}
+                    {foreach from=$article->getAuthors() item=author key=authorKey}
+                        {if $author->getLocalizedAffiliation()}
+                    <li class="jatsParser__meta-aff">{$author->getLocalizedAffiliation()|escape}</li>
+                        {/if}
+                        {if $author->getPrimaryContact() || $author->getEmail()}
+                            {if $author->getPrimaryContact()}
+                    <li class="jatsParser__meta-primecon"><a href="mailto:{$author->getPrimaryContact()|escape}">
+                 {$author->getPrimaryContact()|escape}</a> </li>
+                            {else $author->getEmail()}
+                <li class="jatsParser__meta-mail"><a href="mailto:{$author->getEmail()|escape}">
+                 {$author->getEmail()|escape}</a></li>
+                            {/if}
+                        {/if}
+                        {if $author->getLocalizedBiography()}
+                    <li class="jatsParser__meta-locbio">{$author->getLocalizedBiography()|escape}</li>
+                        {/if}
+                    {/foreach}
+                </ul>
+            {/if}
 		{$htmlDocument}
 
 			</div>
