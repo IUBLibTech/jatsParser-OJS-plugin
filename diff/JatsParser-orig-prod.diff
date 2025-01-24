@@ -1,0 +1,342 @@
+diff -r jatsParser.2.1/ JATSParser-prod/
+
+diff -r jatsParser.2.1/Back/AbstractReference.php JATSParser-prod/Back/AbstractReference.php
+10,11d9
+< abstract class AbstractReference implements Reference
+< {
+12a11,12
+> abstract class AbstractReference implements Reference {
+>
+23a24,26
+>     /* @var $series string */
+>     protected $series;
+>
+29a33,41
+> 	/* @var $pages string */
+> 	protected $pages;
+>
+> 	/* @var $price string */
+> 	protected $price;
+>
+> 	/* @var $isbn string */
+> 	protected $isbn;
+>
+40a53,54
+>     	abstract public function getSeries();
+>
+44a59,64
+> 	abstract public function getPages();
+>
+> 	abstract public function getPrice();
+>
+> 	abstract public function getIsbn();
+>
+47,48c67
+< 	protected function __construct(\DOMElement $reference)
+< 	{
+---
+> 	protected function __construct(\DOMElement $reference) {
+52a72,74
+>         	$this->series = $this->extractFromElement($reference, './/series');
+>
+>         /* rsh xpath instruction [1] to pull second appearance of year */
+54a77,79
+> 		$this->price = $this->extractFromElement($reference, './/page-range');
+> 		$this->pages = $this->extractFromElement($reference, './/price');
+> 		$this->isbn = $this->extractFromElement($reference, './/isbn');
+58,59c83
+< 	protected function extractFromElement(\DOMElement $reference, string $xpathExpression)
+< 	{
+---
+> 	protected function extractFromElement(\DOMElement $reference, string $xpathExpression) {
+79,80c103
+< 	private function extractAuthors(\DOMElement $reference)
+< 	{
+---
+> 	private function extractAuthors(\DOMElement $reference) {
+82,83c105,106
+<
+< 		$nameNodes = $this->xpath->query(".//name|.//collab", $reference);
+---
+> 	/* modify for TMR */
+> 		$nameNodes = $this->xpath->query(".//name", $reference);
+88c111,112
+< 				if ($nameNode->nodeName === 'name' && ($parentOfName->nodeName !== 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
+---
+> 			if ($nameNode->nodeName === 'name' && ($parentOfName->nodeName == 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
+>
+91c115,116
+< 				} elseif ($nameNode->nodeName === 'collab' && ($parentOfName->nodeName !== 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
+---
+>
+> 			/*	} elseif ($nameNode->nodeName === 'collab' && ($parentOfName->nodeName !== 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
+93c118
+< 					$authors[] = $collaborator;
+---
+> 					$authors[] = $collaborator; */
+155c180
+< }
+\ No newline at end of file
+---
+> }
+diff -r jatsParser.2.1/Back/Book.php JATSParser-prod/Back/Book.php
+7c7
+< 	/* @var $title string */
+---
+>     /* @var $title string */
+15a16,27
+>     	/* @var $series string */
+>     	protected $series;
+>
+> 	/* @var $price string */
+> 	protected $pages;
+>
+> 	/* @var $price string */
+> 	protected $price;
+>
+> 	/* @var $isbn string */
+> 	protected $isbn;
+>
+20a33
+> 		$this->series = $this->extractFromElement($reference, ".//series[1]");
+22a36
+> 		$this->year = $this->extractFromElement($reference, ".//year[1]");
+23a38,41
+> 		$this->pages = $this->extractFromElement($reference, ".//page-range[1]");
+> 		$this->price = $this->extractFromElement($reference, ".//price[1]");
+> 		$this->isbn = $this->extractFromElement($reference, ".//isbn[1]");
+>
+49d66
+<
+57a75,81
+>     /**
+>      * @return string
+>      */
+>     public function getSeries(): string {
+>         return $this->series;
+>     }
+>
+87a112,135
+> 	}
+>
+> 	/**
+> 	 * @return string
+> 	 */
+> 	public function getPages(): string
+> 	{
+> 		return $this->pages;
+> 	}
+>
+> 	/**
+> 	 * @return string
+> 	 */
+> 	public function getPrice(): string
+> 	{
+> 		return $this->price;
+> 	}
+>
+> 	/**
+> 	 * @return string
+> 	 */
+> 	public function getIsbn(): string
+> 	{
+> 		return $this->isbn;
+diff -r jatsParser.2.1/Back/Reference.php JATSParser-prod/Back/Reference.php
+12a13,14
+>     public function getSeries();
+>
+13a16,21
+>
+> 	public function getPages();
+>
+> 	public function getPrice();
+>
+> 	public function getIsbn();
+diff -r jatsParser.2.1/Body/Document.php JATSParser-prod/Body/Document.php
+59c59
+< 		foreach(self::$xpath->evaluate("/article/back/ref-list/ref") as $reference ) {
+---
+> 		foreach(self::$xpath->evaluate("/article/front/article-meta|/article/back/ref-list/ref") as $reference ) {
+61c61
+< 			$citationTypeNodes = self::$xpath->query(".//element-citation[1]/@publication-type|.//mixed-citation[1]/@publication-type|.//citation-alternatives[1]/@publication-type", $reference );
+---
+> 			$citationTypeNodes = self::$xpath->query("../product[1]/@product-type|.//element-citation[1]/@publication-type|.//mixed-citation[1]/@publication-type|.//citation-alternatives[1]/@publication-type", $reference );
+89c89
+< 				$chapterTitleNode = self::$xpath->query(".//chapter-title", $reference);
+---
+> 			$chapterTitleNode = self::$xpath->query(".//chapter-title", $reference);
+107c107
+< 					}
+---
+> 					}
+diff -r jatsParser.2.1/Body/Figure.php JATSParser-prod/Body/Figure.php
+24c24
+<
+---
+> 		$this->alt = $this->extractFromElement(".//alt-text", $figureElement);
+46a47,50
+> 	}
+>
+> 	public function getAltText(): ?string {
+> 		return $this->alt;
+diff -r jatsParser.2.1/HTML/Document.php JATSParser-prod/HTML/Document.php
+180c180
+< 		$referencesHeading = $this->createElement("h2");
+---
+> 		$referencesHeading = $this->createElement("div");
+183c183
+< 		$referencesHeading->nodeValue = "References";
+---
+> 		$referencesHeading->nodeValue = "";
+186,187c186,189
+< 		$referenceList = $this->createElement("ol");
+< 		$referenceList->setAttribute("class", "references");
+---
+> 		/* modify element types and IDs for TMR */
+>
+> 		$referenceList = $this->createElement("div");
+> 		$referenceList->setAttribute("id", "related-object");
+194c196
+< 		}
+---
+> 		}
+diff -r jatsParser.2.1/HTML/Figure.php JATSParser-prod/HTML/Figure.php
+11d10
+<
+14a14
+>    public function setContent(JATSFigure $jatsFigure) {
+16,30c16,19
+< 	public function setContent(JATSFigure $jatsFigure) {
+<
+< 		// Add image wrapped inside div (to avoid issues with overlapping by caption)
+< 		$divNode = $this->ownerDocument->createElement("div");
+< 		$divNode->setAttribute("class", "figure");
+< 		$this->appendChild($divNode);
+<
+< 		$srcNode = $this->ownerDocument->createElement("img");
+< 		$divNode->appendChild($srcNode);
+< 		$srcNode->setAttribute("src", $jatsFigure->getLink());
+<
+<
+< 		$titleNode = $this->ownerDocument->createElement("p");
+< 		$titleNode->setAttribute("class", "caption");
+< 		$this->appendChild($titleNode);
+---
+>     // Add image wrapped inside span (to wrap text around book cover thumbnail for JFRR)
+>         $divNode = $this->ownerDocument->createElement("span");
+>         $divNode->setAttribute("class", "figure");
+>         $this->appendChild($divNode);
+31a21,30
+>         $srcNode = $this->ownerDocument->createElement("img");
+>         $divNode->appendChild($srcNode);
+>      // add alt-text as another tag + text in img element, pulling from functions/vars set in Body/Figure.php
+> 	$srcNode->setAttribute("alt", $jatsFigure->getAltText());
+>    	$srcNode->setAttribute("src", $jatsFigure->getLink());
+>
+> 	$titleNode = $this->ownerDocument->createElement("span");
+>         $titleNode->setAttribute("class", "caption");
+>         $this->appendChild($titleNode);
+>
+44c43
+< 		/* Set figure title
+---
+> 	/* Set figure title
+56c55
+< 		/* Set figure notes
+---
+> 	/* Set figure notes
+68,69c67
+<
+< }
+\ No newline at end of file
+---
+> }
+diff -r jatsParser.2.1/HTML/Reference.php JATSParser-prod/HTML/Reference.php
+15c15,16
+< 		parent::__construct("li");
+---
+> 		/* change element li > p for TMR */
+> 		parent::__construct("p");
+21c22
+< 		$this->setAttribute("id", $jatsReference->getId());
+---
+> 		//$this->setAttribute("", $jatsReference->getId());
+90a92,93
+>                 /* TMR modified order and punctuation for HTML display */
+>
+93a97
+>                 /* add element "i" to format italics */
+95c99,100
+< 					$bookTitle = $this->ownerDocument->createTextNode(" " . htmlspecialchars(trim($jatsReference->getTitle())). ".");
+---
+> 					$bookTitle = $this->ownerDocument->createElement("i");
+> 					$bookTitle->nodeValue = " " . htmlspecialchars(trim($jatsReference->getTitle())) . ". ";
+97a103,106
+>                 if ($jatsReference->getSeries() != '') {
+>                     $series = $this->ownerDocument->createTextNode(' ' . htmlspecialchars(trim($jatsReference->getSeries())) . '. ');
+>                     $this->appendChild($series);
+>                 }
+99,109d107
+< 				if ($jatsReference->getPublisherName() != '' && $jatsReference->getPublisherLoc() != '') {
+< 					$pubName= $this->ownerDocument->createTextNode(" " . htmlspecialchars(trim($jatsReference->getPublisherName()). ":"));
+< 					$this->appendChild($pubName);
+< 				} elseif ($jatsReference->getPublisherName() != '' && $jatsReference->getPublisherLoc() == '' && $jatsReference->getYear() != '') {
+< 					$pubName= $this->ownerDocument->createTextNode(" " . htmlspecialchars(trim($jatsReference->getPublisherName()). ";"));
+< 					$this->appendChild($pubName);
+< 				} elseif ($jatsReference->getPublisherName() != '' && $jatsReference->getPublisherLoc() == '' && $jatsReference->getYear() == '') {
+< 					$pubName= $this->ownerDocument->createTextNode(" " . htmlspecialchars(trim($jatsReference->getPublisherName()). ". "));
+< 					$this->appendChild($pubName);
+< 				}
+<
+111c109
+< 					$pubLoc = $this->ownerDocument->createTextNode( " " . htmlspecialchars(trim($jatsReference->getPublisherLoc() . ";")));
+---
+> 					$pubLoc = $this->ownerDocument->createTextNode( " " . htmlspecialchars(trim($jatsReference->getPublisherLoc() . ": ")));
+114c112
+< 					$pubLoc = $this->ownerDocument->createTextNode( " " . htmlspecialchars(trim($jatsReference->getPublisherLoc() . ". ")));
+---
+> 					$pubLoc = $this->ownerDocument->createTextNode( " " . htmlspecialchars(trim($jatsReference->getPublisherLoc() . ": ")));
+116a115,116
+>
+> // rsh omit htmlspecialchars to prevent &amp; url encode from being passed
+117a118,129
+>                 if ($jatsReference->getPublisherName() != '' && $jatsReference->getPublisherLoc() != '') {
+>                                         $pubName= $this->ownerDocument->createTextNode(" " . trim($jatsReference->getPublisherName(). ", "));
+>                                         $this->appendChild($pubName);
+>                 } elseif ($jatsReference->getPublisherName() != '' && $jatsReference->getPublisherLoc() == '' && $jatsReference->getYear() != '') {
+>                                         $pubName= $this->ownerDocument->createTextNode(" " . trim($jatsReference->getPublisherName(). ", "));
+>                                         $this->appendChild($pubName);
+> 				} elseif ($jatsReference->getPublisherName() != '' && $jatsReference->getPublisherLoc() == '' && $jatsReference->getYear() == '') {
+>                                         $pubName= $this->ownerDocument->createTextNode(" " . trim($jatsReference->getPublisherName(). ", "));
+>                                         $this->appendChild($pubName);
+>                 }
+>
+>
+120a133,146
+> 				}
+>
+> 				if ($jatsReference->getPages() != '') {
+> 					$pages = $this->ownerDocument->createTextNode(' ' . htmlspecialchars(trim($jatsReference->getPages())) . '. ');
+> 					$this->appendChild($pages);
+> 				}
+>
+> 				if ($jatsReference->getPrice() != '') {
+> 					$price = $this->ownerDocument->createTextNode(' ' . htmlspecialchars(trim($jatsReference->getPrice())) . '. ');
+> 					$this->appendChild($price);
+> 				}
+> 				if ($jatsReference->getIsbn() != '') {
+> 					$isbn = $this->ownerDocument->createTextNode(' ISBN: ' . htmlspecialchars(trim($jatsReference->getIsbn())) . '. ');
+> 					$this->appendChild($isbn);
+238c264
+< }
+\ No newline at end of file
+---
+> }
+diff -r jatsParser.2.1/HTML/ReferenceMethods.php JATSParser-prod/HTML/ReferenceMethods.php
+14c14,15
+<
+---
+>
+>             /* TMR add text node with period to surname */
+16a18
+> 					$htmlSurname = $domElement->ownerDocument->createTextNode(" " . $author->getSurname() . ".");
