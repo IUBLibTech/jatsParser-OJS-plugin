@@ -2,10 +2,10 @@
 https://scholarworks.iu.edu/journals (IUScholarWorks)  
 [Indiana University Libraries](https://libraries.indiana.edu)  
 
-### JATSParserPlugin
+### jatsParserPlugin
 + Modified version of OJS plugin jatsParser 2.1.0 developed by [@Vitaliy-1](https://github.com/Vitaliy-1)   
   + https://github.com/Vitaliy-1/JATSParserPlugin
-  + https://github.com/Vitaliy-1/JATSParser 
+  + https://github.com/Vitaliy-1/JATSParser (submodule)
 + Pulls article-meta data from JATS XML  
 + Full text publishing of *The Medieval Review* and *Journal of Folklore Reviews*
 
