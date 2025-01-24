@@ -56,9 +56,9 @@ class Document {
 	 */
 	private function extractReferences() {
 		$references = array();
-		foreach(self::$xpath->evaluate("/article/front/article-meta|/article/back/ref-list/ref") as $reference ) {
+		foreach(self::$xpath->evaluate("/article/back/ref-list/ref") as $reference ) {
 			/* @var $reference \DOMElement */
-			$citationTypeNodes = self::$xpath->query("../product[1]/@product-type|.//element-citation[1]/@publication-type|.//mixed-citation[1]/@publication-type|.//citation-alternatives[1]/@publication-type", $reference );
+			$citationTypeNodes = self::$xpath->query(".//element-citation[1]/@publication-type|.//mixed-citation[1]/@publication-type|.//citation-alternatives[1]/@publication-type", $reference );
 			if ($citationTypeNodes->length > 0) {
 				foreach ($citationTypeNodes as $citationTypeNode) {
 					/* @var $citationTypeNode \DOMAttr */
@@ -86,7 +86,7 @@ class Document {
 					}
 				}
 			} else {
-			$chapterTitleNode = self::$xpath->query(".//chapter-title", $reference);
+				$chapterTitleNode = self::$xpath->query(".//chapter-title", $reference);
 				if ($chapterTitleNode->length > 0) {
 					$probablyChapter = new Chapter($reference);
 					$references[] = $probablyChapter;
@@ -104,7 +104,7 @@ class Document {
 							$probablyJournal = new Journal($reference);
 							$references[] = $probablyJournal;
 						}
-					} 
+					}
 				}
 			}
 		}
@@ -124,6 +124,11 @@ class Document {
 					case "p":
 						$par = new Par($content);
 						$articleContent[] = $par;
+						if (!empty($par->getBlockElements())) {
+							foreach ($par->getBlockElements() as $blockElement) {
+								$articleContent[] = $blockElement;
+							}
+						}
 						break;
 					case "list":
 						$list = new Listing($content);
