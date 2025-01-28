@@ -10,6 +10,14 @@ interface Reference {
 
 	public function getEditors();
 
+	public function getSeries();
+
 	public function getYear();
+	
+	public function getPages();
+
+	public function getPrice();
+
+	public function getIsbn();
 
 }

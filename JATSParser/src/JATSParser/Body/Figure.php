@@ -25,11 +25,15 @@ class Figure extends AbstractElement {
 		$this->label = $this->extractFromElement(".//label", $figureElement);
 		$this->link = $this->extractFromElement(".//graphic/@xlink:href", $figureElement);
 		$this->id = $this->extractFromElement( "./@id", $figureElement);
+		$this->alt = $this->extractFromElement(".//alt-text", $figureElement);
 		$this->title = $this->extractTitleOrCaption($figureElement, self::JATS_EXTRACT_TITLE);
 		$this->content = $this->extractTitleOrCaption($figureElement, self::JATS_EXTRACT_CAPTION);
 
 	}
 
+	public function getAltText(): ?string {
+		return $this->alt;
+	
 	public function getContent(): ?array {
 		return $this->content;
 	}

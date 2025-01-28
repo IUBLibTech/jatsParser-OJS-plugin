@@ -203,7 +203,7 @@ class Document extends \DOMDocument {
 	}
 
 	protected function extractReferences (array $references): void {
-
+		/* modify element types and IDs for TMR/JFRR as needed */
 		$referencesHeading = $this->createElement("h2");
 		$referencesHeading->setAttribute("class", "article-section-title");
 		$referencesHeading->setAttribute("id", "reference-title");

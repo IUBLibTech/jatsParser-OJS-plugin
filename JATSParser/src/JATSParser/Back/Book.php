@@ -13,6 +13,18 @@ class Book extends AbstractReference {
 	/* @var $publisherName string */
 	private $publisherName;
 
+    /* @var $series string */
+    private $series;
+
+ 	/* @var $price string */
+ 	private $pages;
+
+ 	/* @var $price string */
+ 	private $price;
+
+ 	/* @var $isbn string */
+ 	private $isbn;
+
 	public function __construct(\DOMElement $reference) {
 
 		parent::__construct($reference);
@@ -21,6 +33,9 @@ class Book extends AbstractReference {
 		$this->publisherLoc = $this->extractFromElement($reference, ".//publisher-loc[1]");
 		$this->publisherName = $this->extractFromElement($reference, ".//publisher-name[1]");
 		$this->url = $this->extractFromElement($reference, ".//ext-link[1]");
+		$this->pages = $this->extractFromElement($reference, ".//page-range[1]");
+		$this->price = $this->extractFromElement($reference, ".//price[1]");
+		$this->isbn = $this->extractFromElement($reference, ".//isbn[1]");
 	}
 
 	/**
@@ -34,7 +49,8 @@ class Book extends AbstractReference {
 	/**
 	 * @return string
 	 */
-	public function getTitle(): string {
+	public function getTitle(): string 
+	{
 		return $this->title;
 	}
 
@@ -45,7 +61,6 @@ class Book extends AbstractReference {
 	{
 		return $this->authors;
 	}
-
 
 	/**
 	 * @return array
@@ -86,7 +101,29 @@ class Book extends AbstractReference {
 	{
 		return $this->publisherName;
 	}
+	/**
+	 * @return string
+	 */
+	public function getPages(): string
+	{
+		return $this->pages;
+	}	
 
+	/**
+	 * @return string
+	 */
+	public function getPrice(): string
+	{
+		return $this->price;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIsbn(): string
+	{
+		return $this->isbn;
+	}
 	/**
 	 * @return array
 	 */

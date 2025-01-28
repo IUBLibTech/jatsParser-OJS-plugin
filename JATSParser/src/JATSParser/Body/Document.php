@@ -56,9 +56,9 @@ class Document {
 	 */
 	private function extractReferences() {
 		$references = array();
-		foreach(self::$xpath->evaluate("/article/back/ref-list/ref") as $reference ) {
+		foreach(self::$xpath->evaluate("/article/front/article-meta|/article/back/ref-list/ref") as $reference ) {
 			/* @var $reference \DOMElement */
-			$citationTypeNodes = self::$xpath->query(".//element-citation[1]/@publication-type|.//mixed-citation[1]/@publication-type|.//citation-alternatives[1]/@publication-type", $reference );
+			$citationTypeNodes = self::$xpath->query("../product[1]/@product-type|.//element-citation[1]/@publication-type|.//mixed-citation[1]/@publication-type|.//citation-alternatives[1]/@publication-type", $reference );
 			if ($citationTypeNodes->length > 0) {
 				foreach ($citationTypeNodes as $citationTypeNode) {
 					/* @var $citationTypeNode \DOMAttr */

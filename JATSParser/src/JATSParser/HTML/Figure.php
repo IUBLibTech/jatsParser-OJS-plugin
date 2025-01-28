@@ -15,13 +15,21 @@ class Figure extends \DOMElement {
 
 	public function setContent(JATSFigure $jatsFigure) {
 
-		// Add image wrapped inside div (to avoid issues with overlapping by caption)
-		$divNode = $this->ownerDocument->createElement("div");
+	// Add image wrapped inside div (to avoid issues with overlapping by caption)
+	/*	$divNode = $this->ownerDocument->createElement("div");
 		$divNode->setAttribute("class", "figure");
-		$this->appendChild($divNode);
+		$this->appendChild($divNode); */
+	// rsh - override div, image wrapped in span (to wrap text around book cover thumbnail for JFRR)
+        $divNode = $this->ownerDocument->createElement("span");
+        $divNode->setAttribute("class", "figure");
+        $this->appendChild($divNode);
 
 		$srcNode = $this->ownerDocument->createElement("img");
 		$divNode->appendChild($srcNode);
+	// add alt-text as another tag + text in img element, pulling from functions/vars set in Body/Figure.php
+		$srcNode->setAttribute("alt", $jatsFigure->getAltText());
+    //	$srcNode->setAttribute("src", $jatsFigure->getLink());
+	// Vitaly new version of getLink
 		$srcNode->setAttribute("src", rawurlencode($jatsFigure->getLink()));
 
 		$titleNode = $this->ownerDocument->createElement("p");
