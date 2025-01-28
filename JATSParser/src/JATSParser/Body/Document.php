@@ -86,7 +86,7 @@ class Document {
 					}
 				}
 			} else {
-			$chapterTitleNode = self::$xpath->query(".//chapter-title", $reference);
+				$chapterTitleNode = self::$xpath->query(".//chapter-title", $reference);
 				if ($chapterTitleNode->length > 0) {
 					$probablyChapter = new Chapter($reference);
 					$references[] = $probablyChapter;
@@ -104,7 +104,7 @@ class Document {
 							$probablyJournal = new Journal($reference);
 							$references[] = $probablyJournal;
 						}
-					} 
+					}
 				}
 			}
 		}
@@ -124,6 +124,11 @@ class Document {
 					case "p":
 						$par = new Par($content);
 						$articleContent[] = $par;
+						if (!empty($par->getBlockElements())) {
+							foreach ($par->getBlockElements() as $blockElement) {
+								$articleContent[] = $blockElement;
+							}
+						}
 						break;
 					case "list":
 						$list = new Listing($content);

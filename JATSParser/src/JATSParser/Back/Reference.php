@@ -10,8 +10,10 @@ interface Reference {
 
 	public function getEditors();
 
-	public function getYear();
+	public function getSeries();
 
+	public function getYear();
+	
 	public function getPages();
 
 	public function getPrice();

@@ -1,5 +1,6 @@
 <?php namespace JATSParser\Back;
 
+use docx2jats\jats\Element;
 use JATSParser\Back\Reference as Reference;
 use JATSParser\Back\Collaboration as Collaboration;
 use JATSParser\Body\Document as Document;
@@ -23,6 +24,9 @@ abstract class AbstractReference implements Reference {
 
 	/* @var $year string */
 	protected $year;
+	
+	/* @var $series string */
+	protected $series;
 
 	/* @var $url string */
 	protected $url;
@@ -39,6 +43,10 @@ abstract class AbstractReference implements Reference {
 	/* @var $pubIdType array publication Identifier for a cited publication */
 	protected $pubIdType;
 
+	protected $rawReference = '';
+
+	protected $isMixed = false;
+
 	abstract public function getId();
 
 	abstract public function getTitle();
@@ -50,6 +58,8 @@ abstract class AbstractReference implements Reference {
 	abstract public function getYear();
 
 	abstract public function getUrl();
+
+	abstract public function getSeries();
 
 	abstract public function getPages();
 
@@ -69,7 +79,14 @@ abstract class AbstractReference implements Reference {
 		$this->price = $this->extractFromElement($reference, './/page-range');
 		$this->pages = $this->extractFromElement($reference, './/price');
 		$this->isbn = $this->extractFromElement($reference, './/isbn');
+		$this->series = $this->extractFromElement($reference, './/series');
 		$this->pubIdType = $this->extractPubIdType($reference);
+
+		$citNode = $this->getFirstChildElement($reference);
+		if ($citNode) {
+			if ($citNode->tagName === 'mixed-citation') $this->isMixed = true;
+			$this->rawReference = $citNode->nodeValue;
+		}
 	}
 
 	protected function extractFromElement(\DOMElement $reference, string $xpathExpression) {
@@ -77,14 +94,14 @@ abstract class AbstractReference implements Reference {
 		$searchNodes = $this->xpath->query($xpathExpression, $reference);
 		if ($searchNodes->length > 0) {
 			foreach ($searchNodes as $searchNode) {
-				$property = $searchNode->nodeValue;
+				/* rollback to $property = $searchNode->nodeValue; problems with character rendering */
+				$property = htmlspecialchars(trim($searchNode->nodeValue));
 			}
 		}
 		return $property;
 	}
 
-	private function extractId(\DOMElement $reference)
-	{
+	private function extractId(\DOMElement $reference) {
 		$id = '';
 		if ($reference->hasAttribute("id")) {
 			$id = $reference->getAttribute("id");
@@ -94,20 +111,18 @@ abstract class AbstractReference implements Reference {
 
 	private function extractAuthors(\DOMElement $reference) {
 		$authors = array();
-/* modify for TMR */
-		$nameNodes = $this->xpath->query(".//name", $reference);
+
+		$nameNodes = $this->xpath->query(".//name|.//collab", $reference);
 		if ($nameNodes->length > 0) {
 			/* @var $nameNode \DOMElement */
 			foreach ($nameNodes as $nameNode) {
 				$parentOfName = $nameNode->parentNode;
-			if ($nameNode->nodeName === 'name' && ($parentOfName->nodeName == 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
-
+				if ($nameNode->nodeName === 'name' && ($parentOfName->nodeName !== 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
 					$individual = new Individual($nameNode);
 					$authors[] = $individual;
-
-			/*	} elseif ($nameNode->nodeName === 'collab' && ($parentOfName->nodeName !== 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
+				} elseif ($nameNode->nodeName === 'collab' && ($parentOfName->nodeName !== 'person-group' || $parentOfName->getAttribute('person-group-type') === 'author')) {
 					$collaborator = new Collaboration($nameNode);
-					$authors[] = $collaborator; */
+					$authors[] = $collaborator;
 				}
 			}
 		}
@@ -168,5 +183,35 @@ abstract class AbstractReference implements Reference {
 			}
 		}
 		return $pubIdType;
+	}
+
+	/**
+	 * @return bool
+	 * @brief check if it's mixed citation (may have untagged text)
+	 */
+	public function isMixed(): bool {
+		return $this->isMixed;
+	}
+
+	/**
+	 * @return string
+	 * @brief contains only the text/nodeValue of the reference node
+	 */
+	public function getRawReference(): string {
+		return $this->rawReference;
+	}
+
+	/**
+	 * @param \DOMElement $el
+	 * @return \DOMElement|null
+	 * @brief return the first child element that is a DOMElement, e.g., to avoid DOMText children
+	 */
+	protected function getFirstChildElement(\DOMElement $el): ?\DOMElement {
+		foreach ($el->childNodes as $refChild) {
+			if ($refChild->nodeType === XML_ELEMENT_NODE) {
+				return $refChild;
+			}
+		}
+		return null;
 	}
 }

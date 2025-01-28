@@ -11,10 +11,10 @@ class ReferenceMethods {
 			if (get_class($author) === "JATSParser\Back\Individual") {
 
 				/* @var $author Individual */
-				
-/* TMR add text node with period to surname */
+
 				if ($author->getSurname()) {
-					$htmlSurname = $domElement->ownerDocument->createTextNode($author->getSurname());
+				/*	$htmlSurname = $domElement->ownerDocument->createTextNode($author->getSurname()); */
+				/* TMR add text node with period to surname */
 					$htmlSurname = $domElement->ownerDocument->createTextNode(" " . $author->getSurname() . ".");
 					$domElement->appendChild($htmlSurname);
 				}
