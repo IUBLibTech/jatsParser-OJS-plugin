@@ -5,25 +5,25 @@ use JATSParser\Back\AbstractReference as AbstractReference;
 class Book extends AbstractReference {
 
 	/* @var $title string */
-	private $title;
+	protected $title;
 
 	/* @var $publisherLoc string */
-	private $publisherLoc;
+	protected $publisherLoc;
 
 	/* @var $publisherName string */
-	private $publisherName;
+	protected $publisherName;
 
-    /* @var $series string */
-    private $series;
-
- 	/* @var $price string */
- 	private $pages;
+    	/* @var $series string */
+    	protected $series;
 
  	/* @var $price string */
- 	private $price;
+ 	protected $pages;
+
+ 	/* @var $price string */
+ 	protected $price;
 
  	/* @var $isbn string */
- 	private $isbn;
+ 	protected $isbn;
 
 	public function __construct(\DOMElement $reference) {
 
@@ -32,6 +32,7 @@ class Book extends AbstractReference {
 		$this->title = $this->extractFromElement($reference, ".//source[1]");
 		$this->publisherLoc = $this->extractFromElement($reference, ".//publisher-loc[1]");
 		$this->publisherName = $this->extractFromElement($reference, ".//publisher-name[1]");
+		$this->series = $this->extractFromElement($reference, ".//series[1]");
 		$this->url = $this->extractFromElement($reference, ".//ext-link[1]");
 		$this->pages = $this->extractFromElement($reference, ".//page-range[1]");
 		$this->price = $this->extractFromElement($reference, ".//price[1]");
