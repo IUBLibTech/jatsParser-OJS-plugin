@@ -7,16 +7,28 @@ class Book extends AbstractReference {
 	/* @var $title string */
 	protected $title;
 
+	/* @var $authors a */
+	protected $authors;
+
+	/* @var $editors string */
+	protected $editors;
+
+	/* @var $year string */
+ 	protected $year;
+
+	/* @var $url string */
+ 	protected $url;
+
 	/* @var $publisherLoc string */
 	protected $publisherLoc;
 
 	/* @var $publisherName string */
 	protected $publisherName;
 
-    	/* @var $series string */
-    	protected $series;
-
- 	/* @var $price string */
+    /* @var $series string */
+    protected $series;
+	
+	/* @var $price string */
  	protected $pages;
 
  	/* @var $price string */
@@ -29,11 +41,13 @@ class Book extends AbstractReference {
 
 		parent::__construct($reference);
 
-		$this->title = $this->extractFromElement($reference, ".//source[1]");
+		$this->title = $this->extractFromElement($reference, ".//article-meta[1]/product[1]/source[1]");
+		$this->authors = $this->extractFromElement($reference, ".//article-meta[1]/product[1]/person-group[1]/name[1]/surname[1]");
+		$this->editors = $this->extractFromElement($reference, ".//article-meta[1]/product[1]/person-group[1]/name[1]/surname[1]");
+		$this->url = $this->extractFromElement($reference, ".//ext-link[1]");
 		$this->publisherLoc = $this->extractFromElement($reference, ".//publisher-loc[1]");
 		$this->publisherName = $this->extractFromElement($reference, ".//publisher-name[1]");
 		$this->series = $this->extractFromElement($reference, ".//series[1]");
-		$this->url = $this->extractFromElement($reference, ".//ext-link[1]");
 		$this->pages = $this->extractFromElement($reference, ".//page-range[1]");
 		$this->price = $this->extractFromElement($reference, ".//price[1]");
 		$this->isbn = $this->extractFromElement($reference, ".//isbn[1]");
@@ -58,7 +72,7 @@ class Book extends AbstractReference {
 	/**
 	 * @return array
 	 */
-	public function getAuthors(): array
+	public function getAuthors(): string
 	{
 		return $this->authors;
 	}
@@ -66,7 +80,7 @@ class Book extends AbstractReference {
 	/**
 	 * @return array
 	 */
-	public function getEditors(): array
+	public function getEditors(): string
 	{
 		return $this->editors;
 	}
@@ -102,6 +116,15 @@ class Book extends AbstractReference {
 	{
 		return $this->publisherName;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getSeries(): string
+	{
+		return $this->series;
+	}
+
 	/**
 	 * @return string
 	 */

@@ -8,13 +8,15 @@ use JATSParser\Body\Document as Document;
 Define('DOI_REFERENCE_PREFIX', 'https://doi.org/');
 Define('PMID_REFERENCE_PREFIX', 'https://www.ncbi.nlm.nih.gov/pubmed/');
 Define('PMCID_REFERENCE_PREFIX', 'https://www.ncbi.nlm.nih.gov/pmc/articles/');
-
 abstract class AbstractReference implements Reference {
 
 	protected $xpath;
 
 	/* @var $id string */
 	protected $id;
+
+	/* @var $id string */
+	protected $title;
 
 	/* @var array can contain instances of Individual and Collaboration class */
 	protected $authors;
@@ -24,12 +26,14 @@ abstract class AbstractReference implements Reference {
 
 	/* @var $year string */
 	protected $year;
-	
-	/* @var $series string */
-	protected $series;
 
 	/* @var $url string */
 	protected $url;
+
+/* rsh: additional elements for JATS journals */
+
+	/* @var $series string */
+	protected $series;
 
 	/* @var $pages string */
 	protected $pages;
@@ -71,15 +75,16 @@ abstract class AbstractReference implements Reference {
 
 	protected function __construct(\DOMElement $reference) {
 		$this->xpath = Document::getXpath();
+		$this->id = $this->extractId($reference);
+		$this->title = $this->extractFromElement($reference, './/source[1]');
 		$this->authors = $this->extractAuthors($reference);
 		$this->editors = $this->extractEditors($reference);
-		$this->id = $this->extractId($reference);
 		$this->year = $this->extractFromElement($reference, './/year[2]');
 		$this->url = $this->extractFromElement($reference, './/ext-link[@ext-link-type="uri"]');
-		$this->price = $this->extractFromElement($reference, './/page-range');
-		$this->pages = $this->extractFromElement($reference, './/price');
-		$this->isbn = $this->extractFromElement($reference, './/isbn');
-		$this->series = $this->extractFromElement($reference, './/series');
+		$this->series = $this->extractFromElement($reference, './/series[1]');
+		$this->pages = $this->extractFromElement($reference, './/page-range[1]');
+		$this->price = $this->extractFromElement($reference, './/price[1]');
+		$this->isbn = $this->extractFromElement($reference, './/isbn[1]');
 		$this->pubIdType = $this->extractPubIdType($reference);
 
 		$citNode = $this->getFirstChildElement($reference);
@@ -94,7 +99,6 @@ abstract class AbstractReference implements Reference {
 		$searchNodes = $this->xpath->query($xpathExpression, $reference);
 		if ($searchNodes->length > 0) {
 			foreach ($searchNodes as $searchNode) {
-				/* rollback to $property = $searchNode->nodeValue; problems with character rendering */
 				$property = htmlspecialchars(trim($searchNode->nodeValue));
 			}
 		}
@@ -154,8 +158,7 @@ abstract class AbstractReference implements Reference {
 	 * Key => Publication ID Typy (DOI, PMID, PMCID), Value => Valid URL
 	 */
 
-	private function extractPubIdType(\DOMElement $reference): array
-	{
+	private function extractPubIdType(\DOMElement $reference): array {
 		$pubIdType = array();
 
 		$pubIdNodes = $this->xpath->query('.//pub-id', $reference);

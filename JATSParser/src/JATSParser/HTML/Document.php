@@ -40,14 +40,26 @@ class Document extends \DOMDocument {
 		$this->citationStyle = $citationStyle;
 		$this->citationLang = $lang;
 		$this->styleInTextLinks = $styleInTextLinks;
-		if (!empty($this->jatsDocument->getReferences())) {
-			$this->extractReferences($this->jatsDocument->getReferences());
-		}
-	}
 
-	public function getHmtlForGalley() {
-		return $this->saveHTML();
-	}
+		/* pull from product */	
+		$refs = $this->jatsDocument->getReferences();
+		$dom   = $this->jatsDocument->getDomDocument();
+    		$xpath = new \DOMXPath($dom);
+    		foreach ($xpath->query('//article-meta/product[@product-type="book"]') as $prodEl) {
+        	$refs[] = new \JATSParser\Back\Book($prodEl);
+       		 }
+		if (!empty($refs)) {
+        		$this->extractReferences($refs);
+       		  }
+		}
+		/* if (!empty($this->jatsDocument->getReferences())) {
+			$this->extractReferences($this->jatsDocument->getReferences());
+		} */
+
+		public function getHmtlForGalley() {
+			return $this->saveHTML();
+		}
+   
 
 	public function getHtmlForTCPDF() {
 

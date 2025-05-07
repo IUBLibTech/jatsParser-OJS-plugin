@@ -5,19 +5,22 @@ use JATSParser\Body\Document as Document;
 class Figure extends AbstractElement {
 
 	/* @var $label string */
-	private $label;
+	protected $label;
 
 	/* @var $link string */
-	private $link;
+	protected $link;
+
+	/* @var $alt string */
+        protected $alt;
 
 	/* @var $id string */
-	private $id;
+	protected $id;
 
 	/* @var $content array; figure caption */
-	private $content;
+	protected $content;
 
 	/* @var $title array */
-	private $title;
+	protected $title;
 
 	public function __construct(\DOMElement $figureElement) {
 		parent::__construct($figureElement);
@@ -33,7 +36,8 @@ class Figure extends AbstractElement {
 
 	public function getAltText(): ?string {
 		return $this->alt;
-	
+	}
+
 	public function getContent(): ?array {
 		return $this->content;
 	}

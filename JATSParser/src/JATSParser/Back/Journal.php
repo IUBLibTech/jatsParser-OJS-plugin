@@ -2,7 +2,8 @@
 
 use JATSParser\Back\AbstractReference as AbstractReference;
 
-class Journal extends AbstractReference {
+class Journal extends AbstractReference
+{
 
 	/* @var $title string */
 	private $title;
@@ -22,7 +23,8 @@ class Journal extends AbstractReference {
 	/* @var $lpage string */
 	private $lpage;
 
-	public function __construct(\DOMElement $reference) {
+	public function __construct(\DOMElement $reference)
+	{
 
 		parent::__construct($reference);
 

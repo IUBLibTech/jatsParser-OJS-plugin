@@ -9,11 +9,13 @@ interface Reference {
 	public function getAuthors();
 
 	public function getEditors();
-
+	
 	public function getSeries();
 
 	public function getYear();
-	
+
+	public function getUrl();
+
 	public function getPages();
 
 	public function getPrice();
