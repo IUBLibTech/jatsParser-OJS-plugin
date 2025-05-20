@@ -895,6 +895,8 @@ class JatsParserPlugin extends GenericPlugin {
 
 		foreach ($submissions as $submission) {
 			$publication = $submission->getCurrentPublication();
+			 // rsh - check to avoid null error for php8
+    			if (!$publication) continue;
 			$galleys = $publication->getData('galleys');
 
 			if (empty($galleys)) continue;
