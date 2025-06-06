@@ -1002,6 +1002,7 @@ class JatsParserPlugin extends GenericPlugin {
 		$publication = Services::get('publication')->get($publicationId);
 		if (!$publication) return;
 
+		// rsh - add ??[] - ensure that variable is always an array before calling array_unique()
 		$submissionFileIds = array_unique($publication->getData('jatsParser::fullTextFileId') ?? []);
 		if (empty($submissionFileIds)) return;
 
