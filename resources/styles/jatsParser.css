@@ -1,3 +1,4 @@
+
 .jatsParser__hide {
 	display: none !important;
 }
@@ -10,10 +11,10 @@
 	margin-left: auto;
 	margin-right: auto;
 }
-/*
+
 .jatsParser__container li {
 	margin-bottom: 6px;
-} */
+}
 
 
 
@@ -73,8 +74,7 @@
 .jatsParser__meta-row {
 	display: flex;
 	flex-wrap: wrap;
-/*	margin: 50px 15px 50px; */
-	margin:0;
+	margin: 50px 15px 50px;
 	justify-content: space-between;
 	border-top: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
@@ -106,17 +106,6 @@ h1.jatsParser__meta-title {
 	margin-bottom: 16px;
 	font-weight: bold;
 	text-align: center;
-	font-size:1.5rem;
-}
-
-h2.jatsParser__meta-title {
-	padding-left: 15px;
-	padding-right: 15px;
-	margin-top: 32px;
-	margin-bottom: 16px;
-	font-weight: bold;
-	text-align: center;
-	font-size:1.5rem;
 }
 
 /* Authors */
@@ -690,56 +679,3 @@ caption .label, .caption .label {
 .jatsparser__article-mobile-view {
 	margin-top: 20px;
 }
-
-div#related-object {
-	border: 1px solid #000;
-	border-radius: 3px;
-	padding: 10px !important;
-	background-color: #ccd1e0;
-	display: inline-block;
-margin-top: .5rem;
-margin-bottom: 2rem;;
-}
-
-div#related-object > p {
-	margin-bottom:0;
-}
-ul.jatsParser__byline {
-    display: flex;
-    flex-direction: column;
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-    font-size: 1.1rem;
-}
-hr.jatsParser {
-    border-top: 1px solid #cccccc;
-}
-
-/* style for print-only view */
-/* supresses logo, reveals journal title in text */
-h1.print-journal-title {
-	display: none;
-}
-
-@media print {
-	header.main-header {
-		display: none;
-	}
-	footer.site-footer {
-		display: none;
-	}
-	h1.print-journal-title {
-		font-size: 2.5rem;
-		display: block;
-	}
-	.jatsParser__articleView {
-		display: block;
-	}
-}
-.jatsParser__meta-mail:has(a:empty) {
-     display:none;
-}
-.jatsParser__meta-mail > a:empty {
-       display:none;
-}       
