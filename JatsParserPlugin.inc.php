@@ -122,7 +122,7 @@ class JatsParserPlugin extends GenericPlugin {
 		$context = $request->getContext(); /* @var $context Journal */
 		$submission = Services::get('submission')->get($publication->getData('submissionId')); /* @var $submission Submission */
 		$issueDao = DAORegistry::getDAO('IssueDAO');
-		$issue = $issueDao->getBySubmissionId($submission->getId(), $context->getId());
+		$issue = $issueDao->getById($publication->getData('issueId'), $context->getId());
 
 		//$this->imageUrlReplacement($xmlGalley, $xpath);
 		//$this->ojsCitationsExtraction($article, $templateMgr, $htmlDocument, $request);
@@ -368,6 +368,7 @@ class JatsParserPlugin extends GenericPlugin {
 		$form = new PublicationJATSUploadForm($latestPublicationApiUrl, $locales, $latestPublication, $submissionFilesXML, $msg);
 		$state = $templateMgr->getTemplateVars('state');
 		$state['components'][FORM_PUBLICATION_JATS_FULLTEXT] = $form->getConfig();
+		$state['publicationFormIds'][] = FORM_PUBLICATION_JATS_FULLTEXT;
 		$templateMgr->assign('state', $state);
 
 		$templateMgr->display($this->getTemplateResource("workflowJatsFulltext.tpl"));
@@ -895,8 +896,8 @@ class JatsParserPlugin extends GenericPlugin {
 
 		foreach ($submissions as $submission) {
 			$publication = $submission->getCurrentPublication();
-			 // rsh - check to avoid null error for php8
-    			if (!$publication) continue;
+			// rsh - check to avoid null for php8
+			if (!$publication) continue;
 			$galleys = $publication->getData('galleys');
 
 			if (empty($galleys)) continue;
@@ -1002,7 +1003,6 @@ class JatsParserPlugin extends GenericPlugin {
 		$publication = Services::get('publication')->get($publicationId);
 		if (!$publication) return;
 
-		// rsh - add ??[] - ensure that variable is always an array before calling array_unique()
 		$submissionFileIds = array_unique($publication->getData('jatsParser::fullTextFileId') ?? []);
 		if (empty($submissionFileIds)) return;
 
