@@ -4,10 +4,12 @@
  *
  * Copyright (c) 2017-2018 Vitalii Bezsheiko
  * Distributed under the GNU GPL v3.
- *
+ * 
+ * validate against https://github.com/Vitaliy-1/JATSParserPlugin/commit/51352fb82247800bae0fc2209fd3648362e71a99
+ * 
  * @class JatsParserPlugin
  * @ingroup plugins_generic_jatsParser
- *
+ * 
  */
 
 require_once __DIR__ . '/JATSParser/vendor/autoload.php';
@@ -22,6 +24,7 @@ use JATSParser\Body\Document;
 use JATSParser\PDF\TCPDFDocument;
 use JATSParser\HTML\Document as HTMLDocument;
 use \PKP\components\forms\FormComponent;
+use APP\Services\SubmissionFileService;
 
 define("CREATE_PDF_QUERY", "download=pdf");
 
@@ -914,15 +917,17 @@ class JatsParserPlugin extends GenericPlugin {
 				$document = new Document($fileManager->getBasePath() . DIRECTORY_SEPARATOR . $submissionFile->getData('path'));
 				if (empty($document->getArticleSections())) continue;
 
-				// Copy galley as a production ready submission file
+	// Copy galley as a production ready submission file
 				$submissionDir = Services::get('submissionFile')->getSubmissionDir($request->getContext()->getId(), $submission->getId());
+				import('lib.pkp.classes.file.FileManager');
+				$fileManager = new FileManager();
 				$fileId = Services::get('file')->add(
-					$fileManager->getBasePath() . DIRECTORY_SEPARATOR . $submissionFile->getData('path'),
-					$submissionDir . '/' . uniqid() . '.xml'
+					$submissionFile->getData('path'),
+					$submissionDir . '/' . uniqid() . '.' . $fileManager->parseFileExtension($submissionFile->getData('path'))
 				);
 
-				$newSubmissionFile = $submissionFileDao->newDataObject();
-				$newSubmissionFile->setAllData(
+				$newSubmissionFile = Services::get('submissionFile')->edit(
+					$submissionFileDao->newDataObject(),
 					[
 						'fileId' => $fileId,
 						'uploaderUserId' => $user->getId(),
@@ -930,10 +935,9 @@ class JatsParserPlugin extends GenericPlugin {
 						'submissionId' => $submission->getId(),
 						'genreId' => $submissionFile->getData('genreId'),
 						'name' => $submissionFile->getData('name'),
-					],
+					]
 				);
-				$newSubmissionFile = Services::get('submissionFile')->add($newSubmissionFile, $request);
-
+				
 				// copy and attach dependent files, only images are supported
 				$assocFiles = Services::get('submissionFile')->getMany(
 					[
