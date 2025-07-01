@@ -102,6 +102,15 @@ class Book extends AbstractReference {
 	{
 		return $this->publisherName;
 	}
+
+        /**
+         * @return string
+         */
+        public function getSeries(): string
+        {
+                return $this->series;
+        }
+	
 	/**
 	 * @return string
 	 */
